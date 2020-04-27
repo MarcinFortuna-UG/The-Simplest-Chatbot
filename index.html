@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Web Speech API demonstration</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width">
+  </head>
+  <body>
+    <h1>Web Speech API demonstration</h1>
+
+    <button type="button">Kliknij by ze mną porozmawiać!</button>
+    <div class="conversation"></div>
+  </body>
+  <script>
+    var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition
+    var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList
+    var SpeechRecognitionEvent = SpeechRecognitionEvent || webkitSpeechRecognitionEvent
+
+    var recognition = new SpeechRecognition();
+
+    recognition.continuous = false;
+    recognition.lang = 'pl-PL';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    var startButton = document.querySelector('button');
+
+    startButton.onclick = function() {
+      recognition.start();
+      console.log('Start speaking!');
+    }
+
+    var conversation = document.querySelector(".conversation");
+
+    recognition.onresult = function(event) {
+      var utt = event.results[0][0].transcript;
+      conversation.textContent = 'You: ' + utt;
+      console.log('Confidence: ' + event.results[0][0].confidence);
+      if (utt == "dzień dobry") {
+        useSpeechSynth("witam!");
+      }
+      if (utt == "dobranoc") {
+        useSpeechSynth("miłej nocy!");
+      }
+      if (utt == "ładna dziś pogoda") {
+        useSpeechSynth("owszem!");
+      }
+
+    }
+
+    recognition.onspeechend = function() {
+      recognition.stop();
+    }
+
+    var synth = window.speechSynthesis;
+
+    function useSpeechSynth(text) {
+      var utterThis = new SpeechSynthesisUtterance(text);
+      synth.cancel();
+      synth.speak(utterThis);
+    }
+
+  </script>
+</html>
